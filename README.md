@@ -58,9 +58,9 @@ For all 3 models tests procedures are defined. The position of the last segment 
 
 | model name | test routine| result JLD2|
 |:----|:----|:---|
-|Tether_07A.jl| `runTest7A.jl`| `T7A.jld2` |
-|Tether_07B.jl| `runTest7B.jl`| `T7B.jld2` |
-|T7modia.jl| `runT7modia.jl`| `T7modia.jld2` |
+| Tether_07A.jl | `runTest7A.jl` | `T7A.jld2` |
+| Tether_07B.jl | `runTest7B.jl` | `T7B.jld2` |
+| T7modia.jl | `runT7modia.jl` | `T7modia.jld2` |
 
 
 ## Discussion
@@ -76,4 +76,20 @@ The original implementation was compared with the modified MTK model. Result are
 The modified MTK model was compared with a `Modia3D` implementation. Result are shown below. The results are more or less identical.
 
 ![comp7B7modia](tests/7B7modia.png)
+
+
+### impact of rotational damping
+
+* `duration = 100` secs
+* on the last element a force is applied at `time>1.0`  `force= [1.0, 0.0, 0.0]`
+
+result of undamped simulation
+
+![damp0](tests/D0.gif)
+
+
+result of simulation  with `Rdamping = 50`
+![damp50](tests/D0.gif)
+
+
 

@@ -91,6 +91,6 @@ end
 # anim = @animate for k in linie
 #     Bild(k)
 # end
-# gif(anim, "ticket.gif")
+# gif(anim, "D50.gif")
 
 # end
