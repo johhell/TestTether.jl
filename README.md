@@ -89,7 +89,7 @@ result of undamped simulation
 
 
 result of simulation  with `Rdamping = 50`
-![damp50](tests/D0.gif)
+![damp50](tests/D50.gif)
 
 
 
