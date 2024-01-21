@@ -1,0 +1,21 @@
+//
+//
+//
+
+
+loadModel(Modelica);
+
+loadFile("F22.mo");
+loadFile("Element.mo");
+
+
+getClassNames();
+
+
+// setCommandLineOptions("-d=initialization");
+
+buildModel (F22, startTime = 0.0, stopTime = 10, numberOfIntervals=499, tolerance=1e-6 );
+
+getErrorString();
+
+system ("make clean");
