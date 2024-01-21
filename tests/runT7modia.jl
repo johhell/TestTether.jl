@@ -25,8 +25,20 @@ xx = positions[segments][:,1]    # last segement
 zz = positions[segments][:,3]
 
 
-jldsave("T7modia.jld2"; T, xx,zz)   # last segments
-jldsave("X7modia.jld2"; segments, T, positions) # all segments
+using HDF5
+
+h5open("T7modia.hdf5", "w") do fid
+    fid["zeit"] = T
+    fid["model"] = "modia"
+    fid["segments"] = se.segments
+    gruppe= create_group(fid, "positions")
+    for i = 1:se.segments
+        xyz = positions[i]
+        gruppe["pos$(i)"] = xyz
+    end
+end
+
+
 
 
 plot(xx,zz, aspect_ratio=:equal)

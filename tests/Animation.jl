@@ -1,17 +1,21 @@
 
-# module Bilder
+module Animation
 
 using Plots
 using Modia
 using Printf
-using JLD2
 
 
-J = JLD2.load("X7modia.jld2")
-segments = J["segments"]
-MM::Vector{Matrix}  = J["positions"]
-zeit = J["T"]
-N = size(MM[1])[1]
+include("utils.jl")
+
+T1 = Daten("T7modia")
+
+
+segments = T1.segments
+zeit = T1.time
+MM  = T1.positions
+N = length(T1.positions[1].xx)
+
 
 
 schritte = 100
@@ -57,19 +61,18 @@ end
 linie = Vector{Zeitpunkt}()
 
 
-function GrafDaten(M::Vector{Matrix}, zz, indx::Int64)::Zeitpunkt
+function GrafDaten(M::Vector{ElementPos}, zz, indx::Int64)::Zeitpunkt
     time = zz[indx]
     x = Vector{Float64}()
     y = Vector{Float64}()
     z = Vector{Float64}()
     for v in M
-        push!(x,v[indx,1])
-        push!(y,v[indx,2])
-        push!(z,v[indx,3])
+        push!(x,v.xx[indx])
+        push!(y,v.yy[indx])
+        push!(z,v.zz[indx])
     end
     Zeitpunkt(time, x,y,z)
 end
-
 
 
 
@@ -79,12 +82,9 @@ end
 
 
 
-
 for k in linie
     Bild(k)
 end
-
-
 
 
 
@@ -93,4 +93,5 @@ end
 # end
 # gif(anim, "D50.gif")
 
-# end
+end
+
