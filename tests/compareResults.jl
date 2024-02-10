@@ -22,12 +22,13 @@ function Bilderbuch(auswahl::Vector{String})
     BildZ(T1, T2, p3, 5)
     Bild(Diff, p4, 5)
 
-    display(plot(p1,p2,p3,p4))
+    p = plot(p1,p2,p3,p4)
+
 
     pngName = "$(T1.name)-$(T2.name).png"
-    println(pngName)
-    # savefig(p, "7A7B.png")
-    # display(p)
+    printstyled("savePNG: $(pngName)\n", color= :blue)
+    savefig(p, pngName)
+    display(p)
 
 end
 
