@@ -28,7 +28,7 @@ struct Daten
     segments::Int64
     positions::Vector{ElementPos}
     function Daten(hdf)
-        FH = h5open("$(hdf).hdf5", "r")
+        FH = h5open("$(hdf)", "r")
         t = read(FH, "zeit")
         n = read(FH, "model")
         s = read(FH, "segments")

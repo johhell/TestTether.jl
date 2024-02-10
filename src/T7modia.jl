@@ -9,29 +9,17 @@ include("$(Modia3D.modelsPath)/Blocks.jl")
 include("$(Modia3D.modelsPath)/Electric.jl")
 include("$(Modia3D.modelsPath)/Rotational.jl")
 
-@with_kw mutable struct Settings @deftype Float64
-    g_earth::Vector{Float64} = [0.0, 0.0, -9.81] # gravitational acceleration     [m/s²]
-    l0 = 50                                      # initial tether length             [m]
-    v_ro = 2                                     # reel-out speed                  [m/s]
-    d_tether = 4                                 # tether diameter                  [mm]
-    rho_tether = 724                             # density of Dyneema            [kg/m³]
-    c_spring = 614600                            # unit spring constant              [N]
-    damping = 473                                # unit damping constant            [Ns]
-    segments::Int64 = 5                          # number of tether segments         [-]
-    α0 = π/10                                    # initial tether angle            [rad]
-    duration = 10                                # duration of the simulation        [s]
-    save::Bool = false                           # save png files in folder video
-end
 
+include("./Tparameters.jl")
 
 
 se = Settings()
 
-mass_per_meter = se.rho_tether * pi * (se.d_tether/2000.0)^2
+# mass_per_meter = se.rho_tether * pi * (se.d_tether/2000.0)^2
 
 
-len_per_segment = se.l0 / se.segments
-mass_per_seg = mass_per_meter * len_per_segment
+# len_per_segment = se.l0 / se.segments
+# mass_per_seg = mass_per_meter * len_per_segment
 
 #springForce = se.c_spring/len_per_segment
 
@@ -53,8 +41,8 @@ end
 
 ElementXX(;obj1, phiY_start=0.0) =  Model(
 
-    box     = Object3D(feature=Solid(massProperties=MassProperties(; mass=mass_per_seg, Ixx=0.0, Iyy=0.0, Izz=0.02))),
-    frame1  = Object3D(parent=:box, translation=:[ len_per_segment, 0.0, 0.0]),
+    box     = Object3D(feature=Solid(massProperties=MassProperties(; mass=se.mass_per_seg, Ixx=0.0, Iyy=0.0, Izz=0.02))),
+    frame1  = Object3D(parent=:box, translation=:[ se.len_per_segment, 0.0, 0.0]),
     rev1    = RevoluteWithFlange(obj1=obj1,   obj2=:frame1, axis=2, phi=Var(init=phiY_start)),
 
 

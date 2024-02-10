@@ -1,16 +1,15 @@
 
-using JLD2
 using Plots
+using HDF5
 
 include("../src/T7modia.jl")
-
+TestCase = "7BModia"
+se = Settings()
 
 @time RunSim(multiPendulum, se.duration)
 
-
-N = multiPendulum.statistics[:nResults]
+# N = multiPendulum.statistics[:nResults]
 T = multiPendulum.result.t[1]
-
 
 segments = se.segments
 
@@ -22,14 +21,13 @@ end
 
 
 xx = positions[segments][:,1]    # last segement
+yy = positions[segments][:,2]    # last segement
 zz = positions[segments][:,3]
 
 
-using HDF5
-
 h5open("T7modia.hdf5", "w") do fid
     fid["zeit"] = T
-    fid["model"] = "modia"
+    fid["model"] = TestCase
     fid["segments"] = se.segments
     gruppe= create_group(fid, "positions")
     for i = 1:se.segments
@@ -38,9 +36,5 @@ h5open("T7modia.hdf5", "w") do fid
     end
 end
 
-
-
-
 plot(xx,zz, aspect_ratio=:equal)
-
 

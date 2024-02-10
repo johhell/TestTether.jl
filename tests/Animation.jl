@@ -8,7 +8,7 @@ using Printf
 
 include("utils.jl")
 
-T1 = Daten("T7modia")
+T1 = Daten("T8")
 
 
 segments = T1.segments
