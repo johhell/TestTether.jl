@@ -11,9 +11,6 @@ include("Tparameters.jl")
 @variables t
 D = Differential(t)
 
-    k = 50000
-
-
 
 function Segment(nummer::Int64, param::Settings, POS0::Vector{Float64}; name)
 
@@ -52,7 +49,7 @@ function Segment(nummer::Int64, param::Settings, POS0::Vector{Float64}; name)
     eqs = vcat(eqs,  force_friction ~ lgwind* vRel_unit * param.frictionCoeff * vRelABS^2)
     eqs = vcat(eqs,  segmentABS ~ norm(segment))
     eqs = vcat(eqs,  v_seg ~ D(segmentABS))
-    eqs = vcat(eqs,  force_springABS ~ (param.len_per_segment-segmentABS)*k - v_seg*param.damping) #TODO  prüfen
+    eqs = vcat(eqs,  force_springABS ~ (param.len_per_segment-segmentABS)*param.c_spring0 - v_seg*param.damping) #TODO  prüfen
     eqs = vcat(eqs,  force_spring ~ segment_unit * force_springABS)
     eqs = vcat(eqs,  (accM .- param.g_earth)* param.mass_per_seg ~  force_spring + force_external - force_friction)
 

@@ -3,12 +3,12 @@
 
 Testing different approaches for tether chain models.
 
-The following 3 models are considered
+The following 4 models are considered
 
-* `Tether_07A.jl` - the original version using MTK ecosystem - only the calculation of cross-section was corrected.
+* `Tether_07A.jl` - the original (monolithic) version using MTK ecosystem - only the calculation of cross-section was corrected.
 * `Tether_07B.jl` - a modified version (see [PR](https://github.com/ufechner7/Tethers.jl/pull/5))
 * `T7modia.jl` - a Modia3D implementation - only for verification
-
+* `Tether_08.jl` - an element based model - including friction in air and the impact of wind
 
 ## Installation
 
@@ -50,46 +50,78 @@ Main difference to the MTK implementation:
 * Elongation is ignored
 * Revolution damping was considered
 
+### `Tether_08.jl`
+
 
 
 ## performed Tests
 
-For all 3 models tests procedures are defined. The position of the last segment is stored in a `JLD2` structure.
+For all 4 models tests procedures are defined. The position of the last segment is stored in a `JLD2` structure.
 
-| model name | test routine| result JLD2|
+| model name | test routine| result HDF5|
 |:----|:----|:---|
-| Tether_07A.jl | `runTest7A.jl` | `T7A.jld2` |
-| Tether_07B.jl | `runTest7B.jl` | `T7B.jld2` |
-| T7modia.jl | `runT7modia.jl` | `T7modia.jld2` |
+| Tether_07A.jl | `runTest7A.jl` | `T7A.hdf5` |
+| Tether_07B.jl | `runTest7B.jl` | `T7B.hdf5` |
+| T7modia.jl | `runT7modia.jl` | `T7modia.hdf5` |
+| Tether_08.jl | `runTest8.jl` | `T8seg.hdf5` |
 
 
-## Discussion
+
+#### Running `compareResults.jl` the results of the performed simulation can be shown in diagrams.
+
+```
+julia> include("compareResults.jl")
+[press: Enter=toggle, a=all, n=none, d=done, q=abort]
+→ ⬚ T7A.hdf5
+  ⬚ T7B.hdf5
+  ⬚ T7modia.hdf5
+  ⬚ T8seg.hdf5
+```
+
 
 ### comparison: `Tether_07A.jl - Tether_07B.jl`
 
 The original implementation was compared with the modified MTK model. Result are shown below.
 
-![comp7A7B](tests/7A7B.png)
+![comp7A7B](tests/7B-7A.png)
 
 ### comparison: `Tether_07B.jl - T7modia.jl`
 
 The modified MTK model was compared with a `Modia3D` implementation. Result are shown below. The results are more or less identical.
 
-![comp7B7modia](tests/7B7modia.png)
+![comp7B7modia](tests/7B-7BModia.png)
+
+### comparison: `Tether_07B.jl - Tether_08.jl`
+
+Comparison of the monolithic model `Tether_07B.jl` with teh element based model `Tether_08.jl`. The results are identical.
+
+![comp7B8](tests/8seg-7B.png)
 
 
-### impact of rotational damping
 
-* `duration = 100` secs
-* on the last element a force is applied at `time>1.0`  `force= [1.0, 0.0, 0.0]`
-
-result of undamped simulation
-
-![damp0](tests/D0.gif)
+## Discussion & TODO's
 
 
-result of simulation  with `Rdamping = 50`
-![damp50](tests/D50.gif)
+### rotational damping
 
+Implementing rotational damping in `MTK` seems to be very difficult. To obtain correct results, torques and inertia of the masses must be taken into account. A correct implementation can be found in `Modia3D`.
+
+Taking into account the air friction of the tether leads to more realistic results. The parameters used in the first draft of `Tether_08.jl` should be reviewed.
+
+
+### roll-in roll-out
+
+
+Variation of length of a segment results in changing of the mass of the element.
+Basically:
+
+> `force  = der(impulse)`
+
+>`impulse ` = `mass  x speed`
+
+>`force = mass x der(speed) + speed x der(mass)`
+
+
+The impact of the additional dynamic force due to changing of the length of the tether should be studied.
 
 

@@ -11,7 +11,7 @@ function Bilderbuch(auswahl::Vector{String})
     T2 = Daten(auswahl[2])
     Diff = Daten(T1,T2)
 
-    p1 = plot(;xlabel="x", ylabel="z")
+    p1 = plot(;xlabel="x", ylabel="z", title="$(auswahl[1])<=>$(auswahl[2])")
     p2 = plot(;xlabel="time", ylabel="x")
     p3 = plot(;xlabel="time", ylabel="z")
     p4 = plot(;xlabel="time", ylabel="Δx,Δz")
