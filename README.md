@@ -112,16 +112,14 @@ Taking into account the air friction of the tether leads to more realistic resul
 ### roll-in roll-out
 
 
-Variation of length of a segment results in changing of the mass of the element.
+Variation of length of a segment results in changing of the mass of the element.  
+
 Basically:
 
-> `force  = der(impulse)`
-
->`impulse ` = `mass  x speed`
-
->`force = mass x der(speed) + speed x der(mass)`
-
+```
+force  = der(impulse)
+impulse = mass x speed
+force = mass x der(speed) + speed x der(mass)
+```
 
 The impact of the additional dynamic force due to changing of the length of the tether should be studied.
-
-

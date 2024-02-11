@@ -17,9 +17,9 @@ using Parameters
     save::Bool = false                           # save png files in folder video
 
     mass_per_meter = rho_tether * pi * (d_tether/2000.0)^2
-    len_per_segment = l0 / segments
+    len_per_segment = l0/segments
     mass_per_seg = mass_per_meter * len_per_segment
-    c_spring0 = c_spring/(l0/segments)
+    c_spring0 = c_spring/len_per_segment
     frictionCoeff = 0.1e-3                      # N/m/(m/s)^2
     wind_speed::Vector{Float64} = [0.0, 0.0, 1e-6]  # NOT zero !!
 end

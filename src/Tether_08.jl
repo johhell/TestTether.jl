@@ -12,7 +12,7 @@ include("Tparameters.jl")
 D = Differential(t)
 
 
-function Segment(nummer::Int64, param::Settings, POS0::Vector{Float64}; name)
+function Segment(param::Settings, position0::Vector{Float64}; name)
 
     @parameters begin
         v_wind[1:3] = param.wind_speed
@@ -20,7 +20,7 @@ function Segment(nummer::Int64, param::Settings, POS0::Vector{Float64}; name)
 
     @variables begin
         pos(t)[1:3]
-        posM(t)[1:3] = POS0
+        posM(t)[1:3] = position0
         velM(t)[1:3] = [0.0,0.0,0.0]
         accM(t)[1:3] = [0,0,0]
         segment(t)[1:3]
@@ -49,7 +49,7 @@ function Segment(nummer::Int64, param::Settings, POS0::Vector{Float64}; name)
     eqs = vcat(eqs,  force_friction ~ lgwind* vRel_unit * param.frictionCoeff * vRelABS^2)
     eqs = vcat(eqs,  segmentABS ~ norm(segment))
     eqs = vcat(eqs,  v_seg ~ D(segmentABS))
-    eqs = vcat(eqs,  force_springABS ~ (param.len_per_segment-segmentABS)*param.c_spring0 - v_seg*param.damping) #TODO  prüfen
+    eqs = vcat(eqs,  force_springABS ~ -(segmentABS-param.len_per_segment)*param.c_spring0 - v_seg*param.damping)
     eqs = vcat(eqs,  force_spring ~ segment_unit * force_springABS)
     eqs = vcat(eqs,  (accM .- param.g_earth)* param.mass_per_seg ~  force_spring + force_external - force_friction)
 
@@ -65,7 +65,7 @@ function model(se::Settings)
     (si,co) = sincos(se.α0)
     for i = 1:se.segments
         startPosition =  [-si*i*se.len_per_segment,0.0, -co*i*se.len_per_segment]
-        push!(c1, Meta.parse("@named S$(i) = Segment($(i),se,$startPosition)"))
+        push!(c1, Meta.parse("@named S$(i) = Segment(se,$startPosition)"))
         push!(c1, Meta.parse("push!(listofSegments, S$(i))"))
     end
     code1 = quote
@@ -86,10 +86,9 @@ function model(se::Settings)
         eqs
     end
 
-    sysEqu = SegmentConnections(listofSegments)
-    @named sys = ODESystem(sysEqu, t, systems=listofSegments)
-    simpsys = structural_simplify(sys)
-    simpsys
+    connectEqu = SegmentConnections(listofSegments)
+    @named sys = ODESystem(connectEqu, t, systems=listofSegments)
+    return simpsys = structural_simplify(sys)
 end
 
 
