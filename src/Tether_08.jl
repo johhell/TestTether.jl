@@ -12,7 +12,7 @@ include("Tparameters.jl")
 D = Differential(t)
 
 
-function Segment(param::Settings, position0::Vector{Float64}; name)
+function Segment(param::Settings, idx::Int64; name)
 
     @parameters begin
         v_wind[1:3] = param.wind_speed
@@ -20,9 +20,9 @@ function Segment(param::Settings, position0::Vector{Float64}; name)
 
     @variables begin
         pos(t)[1:3]
-        posM(t)[1:3] = position0
+        posM(t)[1:3] = param.positionStart[idx]
         velM(t)[1:3] = [0.0,0.0,0.0]
-        accM(t)[1:3] = [0,0,0]
+        accM(t)[1:3] = [0.0,0.0,0.0]
         segment(t)[1:3]
         segment_unit(t)[1:3]
         segmentABS(t) = param.len_per_segment
@@ -56,25 +56,26 @@ function Segment(param::Settings, position0::Vector{Float64}; name)
     ODESystem(eqs, t; name = name)
 end
 
+
+
 listofSegments = []
+
+function AddNewSegment(idx::Int, segList::Vector, ss::Settings)
+    s = Symbol("S", idx)
+    @eval ( @named ($s) = Segment($ss,$idx))
+    @eval ( push!($segList,($s)))
+end
+
 
 function model(se::Settings)
 
     # creating segments
-    c1 = []
-    (si,co) = sincos(se.α0)
     for i = 1:se.segments
-        startPosition =  [-si*i*se.len_per_segment,0.0, -co*i*se.len_per_segment]
-        push!(c1, Meta.parse("@named S$(i) = Segment(se,$startPosition)"))
-        push!(c1, Meta.parse("push!(listofSegments, S$(i))"))
+        AddNewSegment(i, listofSegments, se)
     end
-    code1 = quote
-        $(c1...)
-    end
-    Base.eval(Main,code1)
 
     # connecting segments
-    #TODO   Future: replaced by @connnector?
+    #TODO   Future: replaced by @connnector???
     function SegmentConnections(listSegs::Vector)
         eqs = []
         eqs = vcat(eqs, listSegs[1].pos .~ [0.0,0.0, 0.0])  # 1st segment with fixed position
@@ -82,7 +83,7 @@ function model(se::Settings)
             eqs = vcat(eqs, listSegs[i+1].pos ~ listSegs[i].posM)   # segments in between
             eqs = vcat(eqs, listSegs[i].force_external ~ - listSegs[i+1].force_spring) # segments in between
         end
-        eqs = vcat(eqs, listSegs[end].force_external .~ [0.0,0.0, 0.0])     # last segment - no ext force applied
+        eqs = vcat(eqs, listSegs[end].force_external .~ se.endForce)     # last segment
         eqs
     end
 

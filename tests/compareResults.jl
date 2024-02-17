@@ -16,11 +16,12 @@ function Bilderbuch(auswahl::Vector{String})
     p3 = plot(;xlabel="time", ylabel="z")
     p4 = plot(;xlabel="time", ylabel="Δx,Δz")
 
+    segments = T1.segments   #FIXME last segment
 
-    BildXZ(T1, T2, p1, 5)   #FIXME last segment
-    BildX(T1, T2, p2, 5)
-    BildZ(T1, T2, p3, 5)
-    Bild(Diff, p4, 5)
+    BildXZ(T1, T2, p1, segments)
+    BildX(T1, T2, p2, segments)
+    BildZ(T1, T2, p3, segments)
+    Bild(Diff, p4, segments)
 
     p = plot(p1,p2,p3,p4)
 
@@ -45,7 +46,7 @@ function menu()
     active = true
     while active
         menu = MultiSelectMenu(options, pagesize=10,  charset=:unicode)
-        choice = request("", menu)
+        choice = request(":: choose 2 HDF5.files", menu)
         if length(choice) > 0
             if length(choice) != 2
                 printstyled("Auswahl !=2", color=:red)

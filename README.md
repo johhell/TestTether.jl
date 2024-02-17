@@ -52,6 +52,12 @@ Main difference to the MTK implementation:
 
 ### `Tether_08.jl`
 
+Similar to `Tether_07B.jl`, but with an element-based approach.
+A model was created for a segment, and finally the segments are connected with a tether.
+The boundary conditions at the end of the tether can be defined.
+
+Air friction of the moving segments was taken into account.
+The forces acting on the tether due to wind can also be investigated with this model.
 
 
 ## performed Tests
@@ -67,7 +73,7 @@ For all 4 models tests procedures are defined. The position of the last segment 
 
 
 
-#### Running `compareResults.jl` the results of the performed simulation can be shown in diagrams.
+#### Running `compareResults.jl`: the results of the performed simulation can be shown in diagrams
 
 ```
 julia> include("compareResults.jl")
@@ -93,13 +99,13 @@ The modified MTK model was compared with a `Modia3D` implementation. Result are 
 
 ### comparison: `Tether_07B.jl - Tether_08.jl`
 
-Comparison of the monolithic model `Tether_07B.jl` with teh element based model `Tether_08.jl`. The results are identical.
+Comparison of the monolithic model `Tether_07B.jl` with the element based model `Tether_08.jl`. The results are identical.
 
 ![comp7B8](tests/8seg-7B.png)
 
 
 
-## Discussion & TODO's
+## Discussion
 
 
 ### rotational damping
@@ -108,6 +114,12 @@ Implementing rotational damping in `MTK` seems to be very difficult. To obtain c
 
 Taking into account the air friction of the tether leads to more realistic results. The parameters used in the first draft of `Tether_08.jl` should be reviewed.
 
+
+## TODO's
+
+### initialization
+
+Should be improved.
 
 ### roll-in roll-out
 
